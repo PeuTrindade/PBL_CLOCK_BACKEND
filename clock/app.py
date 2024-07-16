@@ -1,6 +1,7 @@
 import socket
 import threading
 import time
+import pickle
 
 # Variável global para o contador de tempo e endereço do líder
 time_counter = 0
@@ -8,6 +9,7 @@ leader_address = ('localhost', 3030)
 lock = threading.Lock()
 is_leader = False
 clients = set()
+sync = True
 
 # Função para incrementar o contador de tempo
 def increment_time(delay):
@@ -24,8 +26,8 @@ def sync_with_leader():
 
     while True:
         if not is_leader:
-            sock.sendto('SYNC'.encode(), leader_address)
-            data, _ = sock.recvfrom(1024)
+            sock.sendto(pickle.dumps('SYNC'), leader_address)
+            data, addr = sock.recvfrom(1024)
             message = data.decode()
             print(message)
 
@@ -40,6 +42,15 @@ def sync_with_leader():
                     elif time_counter > leader_time:
                         sock.sendto(f'NEW_LEADER {time_counter}'.encode(), leader_address)
         time.sleep(5)
+
+def transmitterSyncMessage():
+    global time_counter, leader_address, is_leader, sync
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+    while True:
+      if not is_leader and sync:
+        sock.sendto(pickle.dumps('SYNC'), leader_address)
+
 
 # Função para o servidor UDP
 def udp_server(host='localhost', port=3030):
@@ -78,6 +89,9 @@ if __name__ == "__main__":
     # Determine se este relógio deve iniciar como líder
     role = input("Este relógio deve iniciar como líder? (s/n): ").strip().lower()
     is_leader = (role == 's')
+
+    if is_leader:
+        sync = False
 
     if not is_leader:
     # Defina o atraso desejado
