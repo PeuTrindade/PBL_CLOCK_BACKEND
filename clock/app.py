@@ -4,7 +4,7 @@ import time
 
 # Variável global para o contador de tempo e endereço do líder
 time_counter = 0
-leader_address = ('localhost', 12345)
+leader_address = ('localhost', 3030)
 lock = threading.Lock()
 is_leader = False
 clients = set()
@@ -27,6 +27,7 @@ def sync_with_leader():
             sock.sendto('SYNC'.encode(), leader_address)
             data, _ = sock.recvfrom(1024)
             message = data.decode()
+            print(message)
 
             if message.startswith('NEW_LEADER'):
                 new_leader_ip, new_leader_port = message.split()[1:]
@@ -41,7 +42,7 @@ def sync_with_leader():
         time.sleep(5)
 
 # Função para o servidor UDP
-def udp_server(host='localhost', port=12345):
+def udp_server(host='localhost', port=3030):
     global time_counter, leader_address, is_leader
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.bind((host, port))
@@ -49,6 +50,7 @@ def udp_server(host='localhost', port=12345):
     while True:
         data, addr = sock.recvfrom(1024)
         message = data.decode()
+        print(message)
 
         if message == 'SYNC':
             if is_leader:
@@ -71,17 +73,18 @@ def notify_clients_of_new_leader(sock, new_leader_addr):
         sock.sendto(message.encode(), client)
 
 if __name__ == "__main__":
-    delay = 2  # Defina o atraso desejado
-    leader_ip = input("Digite o IP do líder inicial: ")
-    leader_port = int(input("Digite a porta do líder inicial: "))
-    leader_address = (leader_ip, leader_port)
+    delay = 2
 
     # Determine se este relógio deve iniciar como líder
     role = input("Este relógio deve iniciar como líder? (s/n): ").strip().lower()
     is_leader = (role == 's')
 
+    if not is_leader:
+    # Defina o atraso desejado
+      leader_ip = input("Digite o IP do líder inicial: ")
+      leader_port = int(input("Digite a porta do líder inicial: "))
+      leader_address = (leader_ip, leader_port)
+      threading.Thread(target=sync_with_leader).start()
+
     threading.Thread(target=increment_time, args=(delay,)).start()
     threading.Thread(target=udp_server).start()
-
-    if not is_leader:
-        sync_with_leader()
