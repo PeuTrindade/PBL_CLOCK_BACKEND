@@ -7,14 +7,14 @@ database = {
     'udpListenner': None,
     'clocks': [
         {
-            "clock": '127.0.0.1',
+            "clock": '192.168.25.105',
             "udpPort": 5999,
             "apiPort": 9000,
             "isLeader": True,
             "time": 0.0
         },
         {
-            "clock": '127.0.0.1',
+            "clock": '192.168.25.131',
             "udpPort": 5998,
             "apiPort": 9001,
             "isLeader": False,
