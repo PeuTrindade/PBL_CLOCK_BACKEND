@@ -9,7 +9,13 @@ class ClockController:
         while True:
             time.sleep(database['drift'])
 
+            # Atualizando relógio atual.
             database['time'] += 1
+
+            # Atualizando relógio atual na lista de relógios do sistema:
+            for clock in database['clocks']:
+                if clock['udpPort'] == database['udpPort']:
+                    clock['time'] += 1
 
             for clock in database['clocks']:
                 if clock['udpPort'] != database['udpPort']:
