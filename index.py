@@ -9,11 +9,7 @@ app = Flask(__name__)
 
 
 def incrementThread():
-    ClockController.increment()
-
-
-def sendCurrentTime():
-    ClockController.sendCurrentTime()
+    ClockController.incrementAndSendTime()
 
 
 def receiveOthersTime():
@@ -41,9 +37,6 @@ if __name__ == '__main__':
 
     increment_thread = threading.Thread(target=incrementThread, daemon=True)
     increment_thread.start()
-
-    send_current_time_thread = threading.Thread(target=sendCurrentTime, daemon=True)
-    send_current_time_thread.start()
 
     receive_others_time = threading.Thread(target=receiveOthersTime, daemon=True)
     receive_others_time.start()

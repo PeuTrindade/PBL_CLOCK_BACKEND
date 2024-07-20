@@ -4,7 +4,7 @@ import json
 
 class ClockController:
     @staticmethod
-    def increment():
+    def incrementAndSendTime():
         global database
         while True:
             time.sleep(database['drift'])
