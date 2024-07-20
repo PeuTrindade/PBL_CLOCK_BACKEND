@@ -11,13 +11,8 @@ class ClockController:
             # Simulação da contagem do tempo:
             time.sleep(database['drift'])
 
-            # Contagem do tempo caso não esteja sincronizado:
-            for clock in database['clocks']:
-                if clock['isLeader']:
-                    if clock['time'] != database['time']:
-
-                        # Atualizando relógio atual geral caso não esteja sincronizado:
-                        database['time'] += 1
+            # Atualizando relógio atual geral.
+            database['time'] += 1
 
             # Atualizando relógio atual na lista de relógios do sistema:
             for clock in database['clocks']:
@@ -41,7 +36,7 @@ class ClockController:
 
 # ===============================================================================================
 
-            # Sincronização com o líder:
+            # Seguindo o tempo do líder:
 
             for clock in database['clocks']:
 
