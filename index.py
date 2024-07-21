@@ -13,6 +13,10 @@ def incrementThread():
 
 
 def receiveOthersTime():
+    ClockController.showClocksInfo()
+
+
+def showClocks():
     ClockController.receiveOthersTime()
 
 
@@ -40,5 +44,8 @@ if __name__ == '__main__':
 
     receive_others_time = threading.Thread(target=receiveOthersTime, daemon=True)
     receive_others_time.start()
+
+    show_clocks = threading.Thread(target=showClocks, daemon=True)
+    show_clocks.start()
 
     app.run(debug=False, port=apiPort)
