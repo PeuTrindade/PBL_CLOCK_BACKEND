@@ -23,11 +23,20 @@ def syncronize():
     for clock in database['clocks']:
         clock['time'] = database['time']
 
-    return jsonify({'message': 'Relógios sincronizados!', 'time': database['time']}), 201
+    return jsonify({'message': 'Relógios sincronizados!', 'time': database['time']}), 200
+
+@app.route('/drift/<float:drift>', methods=['PATCH'])
+def change_drift(drift):
+    global database
+
+    if drift > 0:
+        database['drift'] = drift
+
+    return jsonify({'message': 'Drift alterado com sucesso!'}), 200
 
 @app.route('/leaderIsThere', methods=['GET'])
 def verify():
-    return jsonify({'message': 'Online!'}), 201
+    return jsonify({'message': 'Online!'}), 200
 
 def incrementThread():
     ClockController.incrementAndSendTime()
