@@ -43,26 +43,6 @@ class ClockController:
             message, address = database['udpListenner'].recvfrom(4096)
             decoded_message = json.loads(message.decode())
             database['clocks'] = decoded_message
-        # ===============================================================================================
-
-                    # Seguindo o tempo do líder:
-
-                    # for clock in database['clocks']:
-
-                    #     # Conferindo se esse relógio é líder, se não for, comparamos com o líder:
-                    #     if clock['isLeader'] and clock['clock'] == address[0]:
-
-                    #         # Comparando os tempos entre esse relógio atual e o líder:
-                    #         if time > database['time']:
-
-                    #             # Atualizando relógio atual geral.
-                    #             database['time'] = time
-
-                    #             # Atualizando relógio atual na lista de relógios do sistema:
-                    #             for clock in database['clocks']:
-                    #                 if clock['udpPort'] == database['udpPort']:
-                    #                     clock['time'] = database['time']
-                    #                     break
 
     @staticmethod
     def showClocksInfo():
@@ -70,7 +50,10 @@ class ClockController:
 
         while True:
             time.sleep(0.1)
-            os.system('clear')
+            if os.name == 'posix':
+                os.system('clear')  
+            elif os.name == 'nt': 
+                os.system('cls')
             
             print('=============================================')
             for clock in database['clocks']:

@@ -3,9 +3,28 @@ from database.database import database
 from controllers.ClockController import ClockController
 import threading
 import socket
+import json
 
 
 app = Flask(__name__)
+
+@app.route('/sync', methods=['GET'])
+def syncronize():
+    global database
+    for clock in database['clocks']:
+
+        # Conferindo se esse relógio é líder, se não for, comparamos com o líder:
+        if clock['isLeader']:
+
+            # Atualizando relógio atual geral.
+            database['time'] = clock['time']
+            break
+
+    # Atualizando relógio atual na lista de relógios do sistema:
+    for clock in database['clocks']:
+        clock['time'] = database['time']
+
+    return jsonify({'message': 'Relógios sincronizados!', 'time': database['time']}), 201
 
 
 def incrementThread():
