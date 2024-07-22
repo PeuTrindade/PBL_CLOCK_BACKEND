@@ -1,6 +1,7 @@
 from database.database import database
 import time
 import json
+import requests
 import os
 
 class ClockController:
@@ -35,7 +36,6 @@ class ClockController:
                 if clock['udpPort'] != database['udpPort']:
                     database['udpTransmitter'].sendto(json.dumps(database['clocks']).encode(), (clock['clock'], int(clock['udpPort'])))
 
-
     @staticmethod
     def receiveOthersTime():
         global database
@@ -43,7 +43,21 @@ class ClockController:
             message, address = database['udpListenner'].recvfrom(4096)
             decoded_message = json.loads(message.decode())
             database['clocks'] = decoded_message
+    
+    @staticmethod
+    def checkLeaderIsThere():
+        while True:
+            time.sleep(5)
+            for clock in database['clocks']:
+                if clock['isLeader'] and clock['udpPort'] != database['udpPort']:
+                    try:
+                        getReturn = requests.get(f'{clock['clock']}:{clock['apiPort']}/leaderIsThere').status_code
 
+                        if getReturn != 200:
+                            count = 0
+                    except:
+                        clock['time'] = 0
+                        
     @staticmethod
     def showClocksInfo():
         global database

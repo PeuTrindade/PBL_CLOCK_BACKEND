@@ -3,7 +3,6 @@ from database.database import database
 from controllers.ClockController import ClockController
 import threading
 import socket
-import json
 
 
 app = Flask(__name__)
@@ -26,6 +25,9 @@ def syncronize():
 
     return jsonify({'message': 'Relógios sincronizados!', 'time': database['time']}), 201
 
+@app.route('/leaderIsThere', methods=['GET'])
+def verify():
+    return jsonify({'message': 'Online!'}), 201
 
 def incrementThread():
     ClockController.incrementAndSendTime()
@@ -38,6 +40,8 @@ def receiveOthersTime():
 def showClocks():
     ClockController.receiveOthersTime()
 
+def checkLeaderIsThere():
+    ClockController.checkLeaderIsThere()
 
 if __name__ == '__main__':
     print('Realize a configuração prévia do relógio:')
@@ -63,6 +67,9 @@ if __name__ == '__main__':
 
     receive_others_time = threading.Thread(target=receiveOthersTime, daemon=True)
     receive_others_time.start()
+
+    thread_checkLeaderIsThere = threading.Thread(target=checkLeaderIsThere, daemon=True)
+    thread_checkLeaderIsThere.start()
 
     show_clocks = threading.Thread(target=showClocks, daemon=True)
     show_clocks.start()
