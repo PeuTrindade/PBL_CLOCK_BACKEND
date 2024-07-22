@@ -46,18 +46,19 @@ class ClockController:
     
     @staticmethod
     def checkLeaderIsThere():
+        global database
         while True:
-            time.sleep(5)
+            time.sleep(2)
             for clock in database['clocks']:
                 if clock['isLeader'] and clock['udpPort'] != database['udpPort']:
                     try:
-                        getReturn = requests.get(f'{clock['clock']}:{clock['apiPort']}/leaderIsThere').status_code
+                        getReturn = requests.get(f'http://{clock['clock']}:{clock['apiPort']}/leaderIsThere').status_code
 
-                        if getReturn != 200:
-                            count = 0
+                        if getReturn == 200:
+                            clock['time'] = 0
                     except:
                         clock['time'] = 0
-                        
+
     @staticmethod
     def showClocksInfo():
         global database
